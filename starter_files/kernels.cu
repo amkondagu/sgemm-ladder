@@ -6,11 +6,11 @@
  * Description: Lab 2 -- the SGEMM ladder.  One kernel and one
  *              launcher per rung.
  *
- * Created:     TODO
- * EID:         TODO
- * Author:      TODO
- * Provenance:  I certify that all code contained herein is mine
- *              alone except where otherwise noted.
+ * Created:     November 4, 2026
+ * EID:         amk5537
+ * Author:      Aneesh Kondagunturi
+ * Provenance:  Course-provided starter, with AI assistance on
+ *              Parts 1-4 (ChatGPT). See AI_LOG.md.
  *
  * ================================================================
  */
@@ -44,12 +44,28 @@
 // `col` of B, then writes alpha*dot + beta*C[row][col].
 // ---------------------------------------------------------------------
 
-void sgemm_naive([[maybe_unused]] int N, [[maybe_unused]] float alpha,
-                 [[maybe_unused]] const float* A,
-                 [[maybe_unused]] const float* B,
-                 [[maybe_unused]] float beta, [[maybe_unused]] float* C)
+/* Lines 49-69 written with ChatGPT assistance (Part 1).
+   Purpose: naive row-first CUDA kernel and launcher. */
+__global__ void sgemm_naive_kernel(int N, float alpha, const float* A,
+                                   const float* B, float beta, float* C)
 {
-    // TODO
+    const int row = blockIdx.x * blockDim.x + threadIdx.x;
+    const int col = blockIdx.y * blockDim.y + threadIdx.y;
+
+    float sum = 0.0f;
+    for (int k = 0; k < N; ++k)
+        sum += A[row * N + k] * B[k * N + col];
+
+    const int index = row * N + col;
+    C[index] = alpha * sum + beta * C[index];
+}
+
+void sgemm_naive(int N, float alpha, const float* A,
+                 const float* B, float beta, float* C)
+{
+    const dim3 block(TILE, TILE);
+    const dim3 grid(N / TILE, N / TILE);
+    sgemm_naive_kernel<<<grid, block>>>(N, alpha, A, B, beta, C);
 }
 
 // ---------------------------------------------------------------------
@@ -63,12 +79,27 @@ void sgemm_naive([[maybe_unused]] int N, [[maybe_unused]] float alpha,
 // Nothing else changes.  (Part 4 generalizes this kernel; see below.)
 // ---------------------------------------------------------------------
 
-void sgemm_coalesced([[maybe_unused]] int N, [[maybe_unused]] float alpha,
-                     [[maybe_unused]] const float* A,
-                     [[maybe_unused]] const float* B,
-                     [[maybe_unused]] float beta, [[maybe_unused]] float* C)
+/* Lines 85-103 written with ChatGPT assistance (Parts 2/4).
+   Purpose: coalesced kernel; x lanes index consecutive columns.
+   The generalized shape launcher reuses the same kernel. */
+__global__ void sgemm_coalesced_kernel(int N, float alpha, const float* A,
+                                       const float* B, float beta, float* C)
 {
-    // TODO
+    const int row = blockIdx.y * blockDim.y + threadIdx.y;
+    const int col = blockIdx.x * blockDim.x + threadIdx.x;
+
+    float sum = 0.0f;
+    for (int k = 0; k < N; ++k)
+        sum += A[row * N + k] * B[k * N + col];
+
+    const int index = row * N + col;
+    C[index] = alpha * sum + beta * C[index];
+}
+
+void sgemm_coalesced(int N, float alpha, const float* A,
+                     const float* B, float beta, float* C)
+{
+    sgemm_coalesced_shape(TILE, TILE, N, alpha, A, B, beta, C);
 }
 
 // ---------------------------------------------------------------------
@@ -89,15 +120,34 @@ void sgemm_coalesced([[maybe_unused]] int N, [[maybe_unused]] float alpha,
 // or a literal.
 // ---------------------------------------------------------------------
 
+/* Lines 126-151 written with ChatGPT assistance (Part 3).
+   Purpose: tiled SGEMM with shared data and two barriers
+   to prevent early reads and overwriting tiles still in use. */
 template <int T>
-__global__ void sgemm_tiled_kernel([[maybe_unused]] int N,
-                                   [[maybe_unused]] float alpha,
-                                   [[maybe_unused]] const float* A,
-                                   [[maybe_unused]] const float* B,
-                                   [[maybe_unused]] float beta,
-                                   [[maybe_unused]] float* C)
+__global__ void sgemm_tiled_kernel(int N, float alpha, const float* A,
+                                   const float* B, float beta, float* C)
 {
-    // TODO: __shared__ float As[T][T], Bs[T][T]; then the tile loop.
+    __shared__ float As[T][T];
+    __shared__ float Bs[T][T];
+
+    const int tx = threadIdx.x;
+    const int ty = threadIdx.y;
+    const int row = blockIdx.y * T + ty;
+    const int col = blockIdx.x * T + tx;
+
+    float sum = 0.0f;
+    for (int k0 = 0; k0 < N; k0 += T) {
+        As[ty][tx] = A[row * N + k0 + tx];
+        Bs[ty][tx] = B[(k0 + ty) * N + col];
+        __syncthreads();
+
+        for (int k = 0; k < T; ++k)
+            sum += As[ty][k] * Bs[k][tx];
+        __syncthreads();
+    }
+
+    const int index = row * N + col;
+    C[index] = alpha * sum + beta * C[index];
 }
 
 // PROVIDED: launch the kernel instantiated for one tile size.
@@ -146,15 +196,16 @@ void sgemm_tiled(int N, float alpha, const float* A, const float* B,
 // T = 8, 16 and 32.)
 // ---------------------------------------------------------------------
 
-void sgemm_coalesced_shape([[maybe_unused]] int bx, [[maybe_unused]] int by,
-                           [[maybe_unused]] int N,
-                           [[maybe_unused]] float alpha,
-                           [[maybe_unused]] const float* A,
-                           [[maybe_unused]] const float* B,
-                           [[maybe_unused]] float beta,
-                           [[maybe_unused]] float* C)
+/* Lines 202-209 generated with ChatGPT assistance (Part 4).
+   Purpose: generalize launch block shape; indexing uses blockDim
+   so all tested shapes share the same coalesced kernel. */
+void sgemm_coalesced_shape(int bx, int by, int N, float alpha,
+                           const float* A, const float* B, float beta,
+                           float* C)
 {
-    // TODO
+    const dim3 block(bx, by);
+    const dim3 grid(N / bx, N / by);
+    sgemm_coalesced_kernel<<<grid, block>>>(N, alpha, A, B, beta, C);
 }
 
 // ---------------------------------------------------------------------
