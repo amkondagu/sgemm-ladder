@@ -11,3 +11,6 @@ Mark generated code in the source with the citation comment from the syllabus:
 
 ---
 
+- Codex assisted with implementing Part 6 (`sgemm_reg2d`), using the
+  course-provided Part 5 kernel as a reference.
+
