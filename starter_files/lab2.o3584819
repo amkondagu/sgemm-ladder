@@ -1,0 +1,203 @@
+Shell debugging temporarily silenced: export LMOD_SH_DBG_ON=1 for Lmod's output
+Shell debugging restarted
++ '[' -z '' ']'
++ case "$-" in
++ __lmod_sh_dbg=x
++ '[' -n x ']'
++ set +x
+Shell debugging temporarily silenced: export LMOD_SH_DBG_ON=1 for Lmod's output
+
+Currently Loaded Modules:
+  1) autotools/1.4   3) pmix/3.2.3   5) TACC         7) cuda/12.8  (g)
+  2) cmake/4.1.1     4) xalt/3.1     6) gcc/13.2.0   8) impi/21.18
+
+  Where:
+   g:  built for GPU
+
+Inactive Modules:
+  1) python3
+
+ 
+
+Shell debugging restarted
++ unset __lmod_sh_dbg
++ return 0
+Sun Nov 15 21:22:13 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.195.03             Driver Version: 570.195.03     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A100-PCIE-40GB          Off |   00000000:06:00.0 Off |                    0 |
+| N/A   40C    P0             38W /  250W |       0MiB /  40960MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Wed_Jan_15_19:20:09_PST_2025
+Cuda compilation tools, release 12.8, V12.8.61
+Build cuda_12.8.r12.8/compiler.35404655_0
+NVIDIA (R) Nsight Compute Command Line Profiler
+Copyright (c) 2018-2024 NVIDIA Corporation
+Version 2025.1.0.0 (build 35237751) (public-release)
+v330-010.ls6.tacc.utexas.edu
+rm -f sgemm *.ncu-rep *_full.txt
+nvcc -std=c++20 -O3 -arch=sm_80 -lineinfo -Xcompiler -Wall,-Wextra -o sgemm sgemm.cu kernels.cu -lcublas
+==PROF== Connected to process 3954059 (/home1/11823/akondagu/ECE379K/lab2/sgemm-ladder/starter_files/sgemm)
+==PROF== Profiling "ampere_sgemm_128x64_nn" - 0: 0%....50%....100% - 1 pass
+==PROF== Disconnected from process 3954059
+[3954059] sgemm@127.0.0.1
+  ampere_sgemm_128x64_nn (8, 16, 5)x(128, 1, 1), Context 1, Stream 7, Device 0, CC 8.0
+    Section: Command line profiler metrics
+    ---------------------- ----------- ------------
+    Metric Name            Metric Unit Metric Value
+    ---------------------- ----------- ------------
+    sm__cycles_elapsed.avg       cycle    179390.22
+    ---------------------- ----------- ------------
+
+./sgemm check
+# host v330-010.ls6.tacc.utexas.edu
+# device NVIDIA A100-PCIE-40GB  CC 8.0  108 SMs  1410 MHz  39 GiB
+# FP32 peak 19492 GFLOP/s (SMs x lanes x 2 x max clock)
+check naive           N=128   max_err  7.63e-06  OK
+check coalesced       N=128   max_err  7.63e-06  OK
+check tiled           N=128   max_err  7.63e-06  OK
+check reg1d           N=128   max_err  7.63e-06  OK
+check reg2d           N=128   max_err  7.63e-06  OK
+check mine            N=128   max_err  7.63e-06  OK
+check coalesced:32x32 N=128   max_err  7.63e-06  OK
+check coalesced:32x1  N=128   max_err  7.63e-06  OK
+check coalesced:4x4   N=128   max_err  7.63e-06  OK
+check coalesced:1x32  N=128   max_err  7.63e-06  OK
+check tiled:8         N=128   max_err  7.63e-06  OK
+check tiled:16        N=128   max_err  7.63e-06  OK
+check tiled:32        N=128   max_err  7.63e-06  OK
+check naive           N=384   max_err  3.05e-05  OK
+check coalesced       N=384   max_err  3.05e-05  OK
+check tiled           N=384   max_err  3.05e-05  OK
+check reg1d           N=384   max_err  3.05e-05  OK
+check reg2d           N=384   max_err  3.05e-05  OK
+check mine            N=384   max_err  3.05e-05  OK
+check coalesced:32x32 N=384   max_err  3.05e-05  OK
+check coalesced:32x1  N=384   max_err  3.05e-05  OK
+check coalesced:4x4   N=384   max_err  3.05e-05  OK
+check coalesced:1x32  N=384   max_err  3.05e-05  OK
+check tiled:8         N=384   max_err  3.05e-05  OK
+check tiled:16        N=384   max_err  3.05e-05  OK
+check tiled:32        N=384   max_err  3.05e-05  OK
+check naive           N=1024  max_err  1.03e-04  OK
+check coalesced       N=1024  max_err  1.03e-04  OK
+check tiled           N=1024  max_err  1.03e-04  OK
+check reg1d           N=1024  max_err  1.03e-04  OK
+check reg2d           N=1024  max_err  1.03e-04  OK
+check mine            N=1024  max_err  1.03e-04  OK
+check coalesced:32x32 N=1024  max_err  1.03e-04  OK
+check coalesced:32x1  N=1024  max_err  1.03e-04  OK
+check coalesced:4x4   N=1024  max_err  1.03e-04  OK
+check coalesced:1x32  N=1024  max_err  1.03e-04  OK
+check tiled:8         N=1024  max_err  1.03e-04  OK
+check tiled:16        N=1024  max_err  1.03e-04  OK
+check tiled:32        N=1024  max_err  1.03e-04  OK
+compute-sanitizer --tool memcheck --leak-check full \
+    --error-exitcode 1 ./sgemm all 256 --once
+========= COMPUTE-SANITIZER
+========= LEAK SUMMARY: 0 bytes leaked in 0 allocations
+========= ERROR SUMMARY: 0 errors
+compute-sanitizer --tool racecheck --error-exitcode 1 \
+    ./sgemm all 256 --once
+========= COMPUTE-SANITIZER
+========= RACECHECK SUMMARY: 0 hazards displayed (0 errors, 0 warnings)
+compute-sanitizer --tool synccheck --error-exitcode 1 \
+    ./sgemm all 256 --once
+========= COMPUTE-SANITIZER
+========= ERROR SUMMARY: 0 errors
+./sgemm all 4096 | tee ladder.txt
+# host v330-010.ls6.tacc.utexas.edu
+# device NVIDIA A100-PCIE-40GB  CC 8.0  108 SMs  1410 MHz  39 GiB
+# FP32 peak 19492 GFLOP/s (SMs x lanes x 2 x max clock)
+# N=4096  alpha=1.25 beta=-0.75  1.37e+11 flop per call  median of timed launches
+rung               ms    GFLOP/s   %peak  %cuBLAS    max_err
+naive         470.960      291.8    1.5%     1.7%   1.53e-05  OK
+coalesced      47.510     2892.9   14.8%    16.4%   1.53e-05  OK
+tiled          27.283     5037.4   25.8%    28.6%   1.53e-05  OK
+reg1d          12.939    10621.9   54.5%    60.4%   1.53e-05  OK
+reg2d          11.438    12015.9   61.6%    68.3%   1.53e-05  OK
+mine           12.898    10655.6   54.7%    60.6%   1.53e-05  OK
+cublas          7.812    17593.1   90.3%   100.0%          -  reference
+./sgemm sweep 4096 | tee sweep.txt
+# host v330-010.ls6.tacc.utexas.edu
+# device NVIDIA A100-PCIE-40GB  CC 8.0  108 SMs  1410 MHz  39 GiB
+# FP32 peak 19492 GFLOP/s (SMs x lanes x 2 x max clock)
+# N=4096  alpha=1.25 beta=-0.75  1.37e+11 flop per call  median of timed launches
+config           block   thr warps   blocks        ms   GFLOP/s %cuBLAS
+coalesced:32x32  32x32  1024    32    16384    47.515    2892.6   16.6%  OK
+coalesced:32x1    32x1    32     1   524288    86.463    1589.6    9.1%  OK
+coalesced:4x4      4x4    16     1  1048576   158.796     865.5    5.0%  OK
+coalesced:1x32    1x32    32     1   524288   467.151     294.2    1.7%  OK
+tiled:8            8x8    64     2   262144    53.468    2570.5   14.8%  OK
+tiled:16         16x16   256     8    65536    31.643    4343.5   25.0%  OK
+tiled:32         32x32  1024    32    16384    27.172    5058.1   29.1%  OK
+bash ncu.sh ./sgemm 4096 $(./sgemm list) cublas | tee ncu.txt
+# ncu Version 2025.1.0.0 (build 35237751) (public-release)
+# N=4096  one launch per rung, clocks locked to base by ncu
+rung                   ms  regs   occ%    SM%  DRAM%   DRAM_MB  gld_Msec  sec/req  wf/shld
+naive             868.045    32   98.8    6.0    0.7    8763.6  70883.74    16.50      nan
+coalesced          77.429    32   99.6   67.2    7.3    8689.4  10739.52     2.50      nan
+tiled              47.608    32   99.6   75.1   11.9    8728.4    538.97     4.00     1.20
+reg1d              22.175    38   73.3   60.5    7.9    2642.8    270.52     4.00     1.67
+reg2d              20.391   106   23.8   65.8    2.6     761.8    150.66     4.42     3.21
+mine               22.701    86   24.4   60.3    3.9    1312.8    209.71     4.12     2.67
+cublas             13.277   122   23.3   97.9    6.8    1338.5    202.11     3.97     2.00
+bash ncu.sh ./sgemm 4096 $(./sgemm list-sweep) | tee ncu_sweep.txt
+# ncu Version 2025.1.0.0 (build 35237751) (public-release)
+# N=4096  one launch per rung, clocks locked to base by ncu
+rung                   ms  regs   occ%    SM%  DRAM%   DRAM_MB  gld_Msec  sec/req  wf/shld
+coalesced:32x32    77.427    32   99.6   67.2    7.3    8689.4  10739.52     2.50      nan
+coalesced:32x1    119.532    32   49.9   30.0   46.8   86836.4  10739.52     2.50      nan
+coalesced:4x4     268.973    32   49.9   38.7   15.8   66073.0  21479.01     2.50      nan
+coalesced:1x32    860.865    32   49.9    6.0    0.7    8810.1  70698.91    16.46      nan
+tiled:8            87.424    32   99.5   52.1   26.1   35371.2   2137.37     3.98     1.20
+tiled:16           53.052    32   99.5   73.5   21.1   17334.4   1069.52     3.98     1.20
+tiled:32           47.618    32   99.6   75.1   11.9    8729.4    538.97     4.00     1.20
+ncu --set full --import-source on -f -o reg2d_full \
+    ./sgemm reg2d 4096 --once
+==PROF== Connected to process 3954852 (/home1/11823/akondagu/ECE379K/lab2/sgemm-ladder/starter_files/sgemm)
+==PROF== Profiling "sgemm_reg2d_kernel" - 0: 0%....50%....100% - 49 passes
+==PROF== Disconnected from process 3954852
+==PROF== Report: /home1/11823/akondagu/ECE379K/lab2/sgemm-ladder/starter_files/reg2d_full.ncu-rep
+ncu --import reg2d_full.ncu-rep --page details > reg2d_full.txt
+wrote reg2d_full.ncu-rep and reg2d_full.txt
+nvcc -std=c++20 -O3 -arch=sm_80 -lineinfo -Xcompiler -Wall,-Wextra -Xptxas -v -c kernels.cu -o /dev/null 2>&1 | \
+    grep -E "Compiling entry|Used" | cu++filt
+ptxas info    : Compiling entry function 'void sgemm_tiled_kernel<(int)32>(int, float, const float *, const float *, float, float *)' for 'sm_80'
+ptxas info    : Used 32 registers, used 1 barriers, 8192 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compiling entry function 'void sgemm_tiled_kernel<(int)16>(int, float, const float *, const float *, float, float *)' for 'sm_80'
+ptxas info    : Used 32 registers, used 1 barriers, 2048 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compiling entry function 'void sgemm_tiled_kernel<(int)8>(int, float, const float *, const float *, float, float *)' for 'sm_80'
+ptxas info    : Used 32 registers, used 1 barriers, 512 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compiling entry function 'void sgemm_reg2d_kernel<(int)64, (int)4>(int, float, const float *, const float *, float, float *)' for 'sm_80'
+ptxas info    : Used 86 registers, used 1 barriers, 6144 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compiling entry function 'void sgemm_reg2d_kernel<(int)128, (int)8>(int, float, const float *, const float *, float, float *)' for 'sm_80'
+ptxas info    : Used 106 registers, used 1 barriers, 8192 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compiling entry function 'sgemm_reg1d_kernel(int, float, const float *, const float *, float, float *)' for 'sm_80'
+ptxas info    : Used 38 registers, used 1 barriers, 4096 bytes smem, 392 bytes cmem[0]
+ptxas info    : Compiling entry function 'sgemm_coalesced_kernel(int, float, const float *, const float *, float, float *)' for 'sm_80'
+ptxas info    : Used 32 registers, used 0 barriers, 392 bytes cmem[0]
+ptxas info    : Compiling entry function 'sgemm_naive_kernel(int, float, const float *, const float *, float, float *)' for 'sm_80'
+ptxas info    : Used 32 registers, used 0 barriers, 392 bytes cmem[0]
+make: Entering directory '/tmp/tmp.TfGl7f6k1x'
+nvcc -std=c++20 -O3 -arch=sm_80 -lineinfo -Xcompiler -Wall,-Wextra -o sgemm sgemm.cu kernels.cu -lcublas
+make: Leaving directory '/tmp/tmp.TfGl7f6k1x'
+make: Entering directory '/tmp/tmp.TfGl7f6k1x'
+nvcc -std=c++20 -O3 -arch=sm_80 -lineinfo -Xcompiler -Wall,-Wextra -o sgemm sgemm.cu kernels.cu -lcublas
+make: Leaving directory '/tmp/tmp.TfGl7f6k1x'

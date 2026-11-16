@@ -1,0 +1,84 @@
++ module load gcc/13.2.0 cuda/12.8
++ '[' -z '' ']'
++ case "$-" in
++ __lmod_sh_dbg=x
++ '[' -n x ']'
++ set +x
+
+Lmod is automatically replacing "intel/19.1.1" with "gcc/13.2.0".
+
+
+Inactive Modules:
+  1) python3
+
+The following have been reloaded with a version change:
+  1) impi/19.0.9 => impi/21.18
+
++ unset __lmod_sh_dbg
++ return 0
++ module list
++ nvidia-smi
++ nvcc --version
++ ncu --version
++ hostname
++ export NVIDIA_TF32_OVERRIDE=0
++ NVIDIA_TF32_OVERRIDE=0
++ make clean
++ make
++ ncu --metrics sm__cycles_elapsed.avg ./sgemm cublas 1024 --once
++ tee counter-check.txt
++ make check
++ make sanitize
++ make ladder
++ make sweep
++ make ncu
+profiling naive ...
+profiling coalesced ...
+profiling tiled ...
+profiling reg1d ...
+profiling reg2d ...
+profiling mine ...
+profiling cublas ...
++ make ncu-sweep
+profiling coalesced:32x32 ...
+profiling coalesced:32x1 ...
+profiling coalesced:4x4 ...
+profiling coalesced:1x32 ...
+profiling tiled:8 ...
+profiling tiled:16 ...
+profiling tiled:32 ...
++ make ncu-full RUNG=reg2d
++ make ptxas
+++ mktemp -d
++ barrier_dir=/tmp/tmp.TfGl7f6k1x
++ trap 'rm -rf -- "$barrier_dir"' EXIT
++ cp Makefile kernels.cuh parts.h sgemm.cu /tmp/tmp.TfGl7f6k1x/
++ for barrier in 1 2
++ awk -v barrier=1 '
+        /^__global__ void sgemm_tiled_kernel\(/ { in_tiled = 1 }
+        in_tiled && /^[[:space:]]*__syncthreads\(\);/ {
+            if (++seen == barrier) sub(/__syncthreads/, "// __syncthreads")
+        }
+        /^}/ { in_tiled = 0 }
+        { print }
+        END { if (seen != 2) exit 1 }
+    ' kernels.cu
++ make -B -C /tmp/tmp.TfGl7f6k1x
++ /tmp/tmp.TfGl7f6k1x/sgemm check
++ test 1 -eq 1
++ compute-sanitizer --tool racecheck /tmp/tmp.TfGl7f6k1x/sgemm tiled 256 --once
++ for barrier in 1 2
++ awk -v barrier=2 '
+        /^__global__ void sgemm_tiled_kernel\(/ { in_tiled = 1 }
+        in_tiled && /^[[:space:]]*__syncthreads\(\);/ {
+            if (++seen == barrier) sub(/__syncthreads/, "// __syncthreads")
+        }
+        /^}/ { in_tiled = 0 }
+        { print }
+        END { if (seen != 2) exit 1 }
+    ' kernels.cu
++ make -B -C /tmp/tmp.TfGl7f6k1x
++ /tmp/tmp.TfGl7f6k1x/sgemm check
++ test 1 -eq 1
++ compute-sanitizer --tool racecheck /tmp/tmp.TfGl7f6k1x/sgemm tiled 256 --once
++ rm -rf -- /tmp/tmp.TfGl7f6k1x

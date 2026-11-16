@@ -1,0 +1,10 @@
+# ncu Version 2025.1.0.0 (build 35237751) (public-release)
+# N=4096  one launch per rung, clocks locked to base by ncu
+rung                   ms  regs   occ%    SM%  DRAM%   DRAM_MB  gld_Msec  sec/req  wf/shld
+coalesced:32x32    77.427    32   99.6   67.2    7.3    8689.4  10739.52     2.50      nan
+coalesced:32x1    119.532    32   49.9   30.0   46.8   86836.4  10739.52     2.50      nan
+coalesced:4x4     268.973    32   49.9   38.7   15.8   66073.0  21479.01     2.50      nan
+coalesced:1x32    860.865    32   49.9    6.0    0.7    8810.1  70698.91    16.46      nan
+tiled:8            87.424    32   99.5   52.1   26.1   35371.2   2137.37     3.98     1.20
+tiled:16           53.052    32   99.5   73.5   21.1   17334.4   1069.52     3.98     1.20
+tiled:32           47.618    32   99.6   75.1   11.9    8729.4    538.97     4.00     1.20

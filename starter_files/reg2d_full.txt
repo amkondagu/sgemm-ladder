@@ -1,19 +1,19 @@
-[414800] sgemm@127.0.0.1
-  sgemm_reg2d_kernel(int, float, const float *, const float *, float, float *) (32, 32, 1)x(256, 1, 1), Context 1, Stream 7, Device 0, CC 8.0
+[3954852] sgemm@127.0.0.1
+  void sgemm_reg2d_kernel<128, 8>(int, float, const float *, const float *, float, float *) (32, 32, 1)x(256, 1, 1), Context 1, Stream 7, Device 0, CC 8.0
     Section: GPU Speed Of Light Throughput
     ----------------------- ----------- ------------
     Metric Name             Metric Unit Metric Value
     ----------------------- ----------- ------------
     DRAM Frequency                  Ghz         1.21
     SM Frequency                    Mhz       765.00
-    Elapsed Cycles                cycle     15567923
-    Memory Throughput                 %        72.05
-    DRAM Throughput                   %         2.62
-    Duration                         ms        20.35
-    L1/TEX Cache Throughput           %        76.02
-    L2 Cache Throughput               %         7.87
-    SM Active Cycles              cycle  14754722.94
-    Compute (SM) Throughput           %        65.89
+    Elapsed Cycles                cycle     15603666
+    Memory Throughput                 %        71.88
+    DRAM Throughput                   %         2.61
+    Duration                         ms        20.40
+    L1/TEX Cache Throughput           %        75.86
+    L2 Cache Throughput               %         8.18
+    SM Active Cycles              cycle  14785310.69
+    Compute (SM) Throughput           %        65.74
     ----------------------- ----------- ------------
 
     INF   Compute and Memory are well-balanced: To reduce runtime, both computation and memory traffic must be reduced. 
@@ -41,15 +41,15 @@
     -------------------- ----------- ------------
     Executed Ipc Active   inst/cycle         2.08
     Executed Ipc Elapsed  inst/cycle         1.97
-    Issue Slots Busy               %        52.03
+    Issue Slots Busy               %        51.92
     Issued Ipc Active     inst/cycle         2.08
-    SM Busy                        %        69.52
+    SM Busy                        %        69.38
     -------------------- ----------- ------------
 
-    OPT   FMA is the highest-utilized pipeline (69.5%) based on active cycles, taking into account the rates of its     
+    OPT   FMA is the highest-utilized pipeline (69.4%) based on active cycles, taking into account the rates of its     
           different instructions. It executes 32-bit floating point (FADD, FMUL, FMAD, ...) and integer (IMUL, IMAD)    
           operations. The pipeline is well-utilized, but might become a bottleneck if more work is added. Based on the  
-          number of executed instructions, the highest utilized pipeline (69.5%) is FMA. It executes 32-bit floating    
+          number of executed instructions, the highest utilized pipeline (69.4%) is FMA. It executes 32-bit floating    
           point (FADD, FMUL, FMAD, ...) and integer (IMUL, IMAD) operations. Comparing the two, the overall pipeline    
           utilization appears to be caused by frequent, low-latency instructions. See the Kernel Profiling Guide        
           (https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#metrics-decoder) or hover over the          
@@ -61,50 +61,50 @@
     ---------------------------- ----------- ------------
     Metric Name                  Metric Unit Metric Value
     ---------------------------- ----------- ------------
-    Memory Throughput                Gbyte/s        40.68
-    Mem Busy                               %        72.05
-    Max Bandwidth                          %        34.24
-    L1/TEX Hit Rate                        %        18.96
+    Memory Throughput                Gbyte/s        40.59
+    Mem Busy                               %        71.88
+    Max Bandwidth                          %        34.17
+    L1/TEX Hit Rate                        %        18.97
     L2 Compression Success Rate            %            0
     L2 Compression Ratio                                0
     L2 Compression Input Sectors      sector            0
-    L2 Hit Rate                            %        76.92
-    Mem Pipes Busy                         %        24.26
+    L2 Hit Rate                            %        76.87
+    Mem Pipes Busy                         %        24.21
     ---------------------------- ----------- ------------
 
     Section: Memory Workload Analysis Tables
-    OPT   Est. Speedup: 7.004%                                                                                          
+    OPT   Est. Speedup: 6.988%                                                                                          
           The memory access pattern for global loads from L1TEX might not be optimal. On average, only 28.9 of the 32   
           bytes transmitted per sector are utilized by each thread. This could possibly be caused by a stride between   
           threads. Check the Source Counters section for uncoalesced global loads.                                      
     ----- --------------------------------------------------------------------------------------------------------------
-    OPT   Est. Speedup: 63.04%                                                                                          
+    OPT   Est. Speedup: 62.89%                                                                                          
           The memory access pattern for global stores to L1TEX might not be optimal. On average, only 4.0 of the 32     
           bytes transmitted per sector are utilized by each thread. This could possibly be caused by a stride between   
           threads. Check the Source Counters section for uncoalesced global stores.                                     
     ----- --------------------------------------------------------------------------------------------------------------
-    OPT   Est. Speedup: 37.95%                                                                                          
+    OPT   Est. Speedup: 37.87%                                                                                          
           The memory access pattern for shared loads might not be optimal and causes on average a 3.2 - way bank        
-          conflict across all 335544320 shared load requests.This results in 536903666 bank conflicts,  which           
-          represent 49.92% of the overall 1075447967 wavefronts for shared loads. Check the Source Counters section     
+          conflict across all 335544320 shared load requests.This results in 536903221 bank conflicts,  which           
+          represent 49.92% of the overall 1075455624 wavefronts for shared loads. Check the Source Counters section     
           for uncoalesced shared loads.                                                                                 
 
     Section: Scheduler Statistics
     ---------------------------- ----------- ------------
     Metric Name                  Metric Unit Metric Value
     ---------------------------- ----------- ------------
-    One or More Eligible                   %        52.03
+    One or More Eligible                   %        51.92
     Issued Warp Per Scheduler                        0.52
-    No Eligible                            %        47.97
+    No Eligible                            %        48.08
     Active Warps Per Scheduler          warp         3.81
-    Eligible Warps Per Scheduler        warp         1.10
+    Eligible Warps Per Scheduler        warp         1.09
     ---------------------------- ----------- ------------
 
-    OPT   Est. Local Speedup: 27.95%                                                                                    
+    OPT   Est. Local Speedup: 28.12%                                                                                    
           Every scheduler is capable of issuing one instruction per cycle, but for this workload each scheduler only    
           issues an instruction every 1.9 cycles. This might leave hardware resources underutilized and may lead to     
           less optimal performance. Out of the maximum of 16 warps per scheduler, this workload allocates an average    
-          of 3.81 active warps per scheduler, but only an average of 1.10 warps were eligible per cycle. Eligible       
+          of 3.81 active warps per scheduler, but only an average of 1.09 warps were eligible per cycle. Eligible       
           warps are the subset of active warps that are ready to issue their next instruction. Every cycle with no      
           eligible warp results in no instruction being issued and the issue slot remains unused. To increase the       
           number of eligible warps, avoid possible load imbalances due to highly different execution durations per      
@@ -114,8 +114,8 @@
     ---------------------------------------- ----------- ------------
     Metric Name                              Metric Unit Metric Value
     ---------------------------------------- ----------- ------------
-    Warp Cycles Per Issued Instruction             cycle         7.32
-    Warp Cycles Per Executed Instruction           cycle         7.32
+    Warp Cycles Per Issued Instruction             cycle         7.34
+    Warp Cycles Per Executed Instruction           cycle         7.34
     Avg. Active Threads Per Warp                                   32
     Avg. Not Predicated Off Threads Per Warp                    31.72
     ---------------------------------------- ----------- ------------
@@ -127,7 +127,7 @@
     Avg. Executed Instructions Per Scheduler        inst   7676738.37
     Executed Instructions                           inst   3316350976
     Avg. Issued Instructions Per Scheduler          inst   7676805.33
-    Issued Instructions                             inst   3316379902
+    Issued Instructions                             inst   3316379901
     ---------------------------------------- ----------- ------------
 
     Section: Launch Statistics
@@ -171,11 +171,11 @@
     Block Limit Warps                     block            8
     Theoretical Active Warps per SM        warp           16
     Theoretical Occupancy                     %           25
-    Achieved Occupancy                        %        23.82
+    Achieved Occupancy                        %        23.81
     Achieved Active Warps Per SM           warp        15.24
     ------------------------------- ----------- ------------
 
-    OPT   Est. Speedup: 27.95%                                                                                          
+    OPT   Est. Speedup: 28.12%                                                                                          
           The 4.00 theoretical warps per scheduler this kernel can issue according to its occupancy are below the       
           hardware maximum of 16. This kernel's theoretical occupancy (25.0%) is limited by the number of required      
           registers.                                                                                                    
@@ -184,16 +184,16 @@
     -------------------------- ----------- ------------
     Metric Name                Metric Unit Metric Value
     -------------------------- ----------- ------------
-    Average DRAM Active Cycles       cycle       646722
-    Total DRAM Elapsed Cycles        cycle    989019904
-    Average L1 Active Cycles         cycle  14754722.94
-    Total L1 Elapsed Cycles          cycle   1681334888
-    Average L2 Active Cycles         cycle  11435262.81
-    Total L2 Elapsed Cycles          cycle   1221013440
-    Average SM Active Cycles         cycle  14754722.94
-    Total SM Elapsed Cycles          cycle   1681334888
-    Average SMSP Active Cycles       cycle  14755944.91
-    Total SMSP Elapsed Cycles        cycle   6725339552
+    Average DRAM Active Cycles       cycle    646861.30
+    Total DRAM Elapsed Cycles        cycle    991290368
+    Average L1 Active Cycles         cycle  14785310.69
+    Total L1 Elapsed Cycles          cycle   1685194892
+    Average L2 Active Cycles         cycle  11023776.94
+    Total L2 Elapsed Cycles          cycle   1174864240
+    Average SM Active Cycles         cycle  14785310.69
+    Total SM Elapsed Cycles          cycle   1685194892
+    Average SMSP Active Cycles       cycle  14787087.92
+    Total SMSP Elapsed Cycles        cycle   6740779568
     -------------------------- ----------- ------------
 
     Section: Source Counters
@@ -206,14 +206,14 @@
     Avg. Divergent Branches                          0
     ------------------------- ----------- ------------
 
-    OPT   Est. Speedup: 13.11%                                                                                          
+    OPT   Est. Speedup: 13.14%                                                                                          
           This kernel has uncoalesced global accesses resulting in a total of 29360128 excessive sectors (18% of the    
           total 167772160 sectors). Check the L2 Theoretical Sectors Global Excessive table for the primary source      
           locations. The CUDA Programming Guide                                                                         
           (https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#device-memory-accesses) has additional      
           information on reducing uncoalesced device memory accesses.                                                   
     ----- --------------------------------------------------------------------------------------------------------------
-    OPT   Est. Speedup: 45.95%                                                                                          
+    OPT   Est. Speedup: 45.94%                                                                                          
           This kernel has uncoalesced shared accesses resulting in a total of 536870912 excessive wavefronts (48% of    
           the total 1107296256 wavefronts). Check the L1 Wavefronts Shared Excessive table for the primary source       
           locations. The CUDA Best Practices Guide                                                                      

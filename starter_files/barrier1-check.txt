@@ -1,9 +1,21 @@
-# host c301-001.ls6.tacc.utexas.edu
+tiled: N=128 first worst element C[64][125] = 10.0907, expected -0.90993
+tiled:8: N=128 first worst element C[4][86] = 7.05921, expected -0.42934
+tiled:16: N=128 first worst element C[8][120] = -2.17927, expected 6.58528
+tiled:32: N=128 first worst element C[63][9] = 4.1607, expected -5.47236
+tiled: N=384 first worst element C[312][260] = -24.2771, expected -4.13171
+tiled:8: N=384 first worst element C[378][149] = 44.3939, expected 2.26278
+tiled:16: N=384 first worst element C[188][118] = -14.3779, expected 3.96089
+tiled:32: N=384 first worst element C[285][139] = -11.0779, expected 15.17
+tiled: N=1024 first worst element C[411][123] = 37.9267, expected -22.2261
+tiled:8: N=1024 first worst element C[399][523] = -82.0584, expected 13.7265
+tiled:16: N=1024 first worst element C[682][447] = -30.7919, expected 0.0449247
+tiled:32: N=1024 first worst element C[958][448] = -8.52704, expected 18.1737
+# host v330-010.ls6.tacc.utexas.edu
 # device NVIDIA A100-PCIE-40GB  CC 8.0  108 SMs  1410 MHz  39 GiB
 # FP32 peak 19492 GFLOP/s (SMs x lanes x 2 x max clock)
 check naive           N=128   max_err  7.63e-06  OK
 check coalesced       N=128   max_err  7.63e-06  OK
-check tiled           N=128   max_err  7.63e-06  OK
+check tiled           N=128   max_err  1.10e+01  FAIL
 check reg1d           N=128   max_err  7.63e-06  OK
 check reg2d           N=128   max_err  7.63e-06  OK
 check mine            N=128   max_err  7.63e-06  OK
@@ -11,12 +23,12 @@ check coalesced:32x32 N=128   max_err  7.63e-06  OK
 check coalesced:32x1  N=128   max_err  7.63e-06  OK
 check coalesced:4x4   N=128   max_err  7.63e-06  OK
 check coalesced:1x32  N=128   max_err  7.63e-06  OK
-check tiled:8         N=128   max_err  7.63e-06  OK
-check tiled:16        N=128   max_err  7.63e-06  OK
-check tiled:32        N=128   max_err  7.63e-06  OK
+check tiled:8         N=128   max_err  7.49e+00  FAIL
+check tiled:16        N=128   max_err  8.76e+00  FAIL
+check tiled:32        N=128   max_err  9.63e+00  FAIL
 check naive           N=384   max_err  3.05e-05  OK
 check coalesced       N=384   max_err  3.05e-05  OK
-check tiled           N=384   max_err  3.05e-05  OK
+check tiled           N=384   max_err  2.01e+01  FAIL
 check reg1d           N=384   max_err  3.05e-05  OK
 check reg2d           N=384   max_err  3.05e-05  OK
 check mine            N=384   max_err  3.05e-05  OK
@@ -24,12 +36,12 @@ check coalesced:32x32 N=384   max_err  3.05e-05  OK
 check coalesced:32x1  N=384   max_err  3.05e-05  OK
 check coalesced:4x4   N=384   max_err  3.05e-05  OK
 check coalesced:1x32  N=384   max_err  3.05e-05  OK
-check tiled:8         N=384   max_err  3.05e-05  OK
-check tiled:16        N=384   max_err  3.05e-05  OK
-check tiled:32        N=384   max_err  3.05e-05  OK
+check tiled:8         N=384   max_err  4.21e+01  FAIL
+check tiled:16        N=384   max_err  1.83e+01  FAIL
+check tiled:32        N=384   max_err  2.62e+01  FAIL
 check naive           N=1024  max_err  1.03e-04  OK
 check coalesced       N=1024  max_err  1.03e-04  OK
-check tiled           N=1024  max_err  1.03e-04  OK
+check tiled           N=1024  max_err  6.02e+01  FAIL
 check reg1d           N=1024  max_err  1.03e-04  OK
 check reg2d           N=1024  max_err  1.03e-04  OK
 check mine            N=1024  max_err  1.03e-04  OK
@@ -37,6 +49,6 @@ check coalesced:32x32 N=1024  max_err  1.03e-04  OK
 check coalesced:32x1  N=1024  max_err  1.03e-04  OK
 check coalesced:4x4   N=1024  max_err  1.03e-04  OK
 check coalesced:1x32  N=1024  max_err  1.03e-04  OK
-check tiled:8         N=1024  max_err  1.03e-04  OK
-check tiled:16        N=1024  max_err  1.03e-04  OK
-check tiled:32        N=1024  max_err  1.03e-04  OK
+check tiled:8         N=1024  max_err  9.58e+01  FAIL
+check tiled:16        N=1024  max_err  3.08e+01  FAIL
+check tiled:32        N=1024  max_err  2.67e+01  FAIL
