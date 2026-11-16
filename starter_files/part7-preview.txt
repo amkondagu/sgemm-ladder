@@ -1,0 +1,5 @@
+# ncu Version 2025.1.0.0 (build 35237751) (public-release)
+# N=4096  one launch per rung, clocks locked to base by ncu
+rung                   ms  regs   occ%    SM%  DRAM%   DRAM_MB  gld_Msec  sec/req  wf/shld
+reg2d              20.349   106   23.8   65.9    2.6     761.8    150.65     4.42     3.21
+mine               22.612    86   24.4   60.6    3.9    1311.9    209.71     4.12     2.67
