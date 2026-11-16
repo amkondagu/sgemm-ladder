@@ -14,3 +14,15 @@ Mark generated code in the source with the citation comment from the syllabus:
 - Codex assisted with implementing Part 6 (`sgemm_reg2d`), using the
   course-provided Part 5 kernel as a reference.
 
+- Part 7 prediction, recorded before editing the kernel: `reg2d` used 106
+  registers per thread, reached 23.8% occupancy, and ran in 20.35 ms under
+  Nsight Compute. Registers limited it to two blocks per SM, and schedulers
+  had no eligible warp in 48% of cycles. Shrinking the output patch per
+  thread from 8×8 to 8×4 should bring the register count toward 80. At 80
+  registers or fewer, three blocks per SM should be possible, with achieved
+  occupancy in the low-to-mid 30s. I expect a small drop in profiled time,
+  although reduced data reuse could offset the gain.
+
+- Codex helped interpret the Nsight Compute baseline and implement the
+  agreed Part 7 tile shape in the shared register-blocking kernel.
+
